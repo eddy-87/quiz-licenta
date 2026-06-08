@@ -2,6 +2,8 @@ import { useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { TYPEIN } from '../data/typein'
 import { SECTIONS } from '../data/exercises'
+import { shuffle } from '../lib/selection'
+import { usePersistedMap } from '../hooks/usePersistedMap'
 import { Icon } from './Icon'
 
 // Normalizare „iertătoare": fără diacritice, litere mici, fără punctuație, spații simple.
@@ -26,16 +28,18 @@ function isMatch(input, answers) {
 }
 
 export default function Scrie() {
+  const { map: known, set: markKnown } = usePersistedMap('exam-licenta:typein:v1')
+  const allShuffled = useMemo(() => shuffle(TYPEIN), []) // randomizat la fiecare intrare
   const [section, setSection] = useState('all')
   const [index, setIndex] = useState(0)
   const [input, setInput] = useState('')
   const [checked, setChecked] = useState(false)
   const [result, setResult] = useState(null) // 'correct' | 'wrong'
-  const [session, setSession] = useState({ seen: 0, correct: 0 })
   const inputRef = useRef(null)
 
   const list = useMemo(() => {
-    return section === 'all' ? TYPEIN : TYPEIN.filter((t) => t.section === section)
+    return section === 'all' ? allShuffled : allShuffled.filter((t) => t.section === section)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [section])
 
   const safeIndex = Math.min(index, Math.max(0, list.length - 1))
@@ -56,14 +60,16 @@ export default function Scrie() {
     const ok = isMatch(input, item.answers)
     setResult(ok ? 'correct' : 'wrong')
     setChecked(true)
-    setSession((s) => ({ seen: s.seen + 1, correct: s.correct + (ok ? 1 : 0) }))
+    if (ok) markKnown(item.id, 'known') // persistă „știut"
   }
 
   const selfRight = () => {
     if (result === 'correct') return
     setResult('correct')
-    setSession((s) => ({ ...s, correct: s.correct + 1 }))
+    if (item) markKnown(item.id, 'known')
   }
+
+  const knownCount = list.filter((t) => known[t.id] === 'known').length
 
   const next = () => {
     setIndex((i) => (i + 1) % list.length) // reia ciclic
@@ -120,7 +126,7 @@ export default function Scrie() {
                 {secName(item.section)}
               </span>
               <span className="text-slate-500">
-                {session.correct}/{session.seen} corecte
+                {knownCount}/{list.length} știute
               </span>
             </div>
 

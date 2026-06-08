@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EXERCISES, SECTIONS, TYPE_LABEL } from '../data/exercises'
+import { shuffle } from '../lib/selection'
 import { useExerciseRatings } from '../hooks/useExerciseRatings'
 import { Icon } from './Icon'
 import Markup from './Markup'
@@ -20,8 +21,9 @@ export default function Subiecte() {
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
 
+  const allShuffled = useMemo(() => shuffle(EXERCISES), []) // randomizat la fiecare intrare
   const list = useMemo(() => {
-    let l = EXERCISES
+    let l = allShuffled
     if (section !== 'all') l = l.filter((e) => e.section === section)
     if (sourceFilter !== 'all') l = l.filter((e) => e.source === sourceFilter)
     if (onlyRepeat) l = l.filter((e) => ratings[e.id] !== 'known')

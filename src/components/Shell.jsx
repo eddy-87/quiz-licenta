@@ -53,7 +53,12 @@ export default function Shell({ active, onNavigate, progress, children }) {
     <div className="min-h-full md:pl-[252px]">
       {/* ---- Sidebar (desktop) ---- */}
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-[252px] flex-col border-r border-white/10 bg-ink-900/70 px-4 py-6 backdrop-blur-md md:flex">
-        <div className="flex items-center gap-2.5 px-2">
+        <button
+          onClick={() => onNavigate('dashboard')}
+          className="flex w-full items-center gap-2.5 rounded-xl px-2 py-1.5 text-left transition hover:bg-white/5"
+          title="Înapoi la pagina principală"
+          aria-label="Acasă"
+        >
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
             <Icon name="cap" className="h-5 w-5" />
           </span>
@@ -61,7 +66,7 @@ export default function Shell({ active, onNavigate, progress, children }) {
             <p className="text-sm font-extrabold tracking-tight text-slate-100">Quiz Licență</p>
             <p className="text-[11px] text-slate-500">pregătire examen</p>
           </div>
-        </div>
+        </button>
 
         <nav className="mt-8 flex flex-col gap-1">
           <p className="px-3.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-slate-600">Meniu</p>
