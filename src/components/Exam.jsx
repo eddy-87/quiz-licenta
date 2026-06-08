@@ -5,6 +5,7 @@ import { buildExamSet } from '../lib/selection'
 import QuestionCard from './QuestionCard'
 import ProgressBar from './ProgressBar'
 import { Icon } from './Icon'
+import ExamReal from './ExamReal'
 
 const TIME_OPTIONS = [30, 60, 90] // minute
 const COUNT_OPTIONS = [20, 30, 50]
@@ -16,9 +17,10 @@ function fmt(sec) {
 }
 
 export default function Exam({ onAnswer, onExit }) {
-  const [phase, setPhase] = useState('setup') // 'setup' | 'run' | 'done'
+  const [phase, setPhase] = useState('setup') // 'setup' | 'run' | 'done' | 'real'
   const [minutes, setMinutes] = useState(60)
   const [count, setCount] = useState(30)
+  const [examType, setExamType] = useState('real') // 'real' | 'grila'
 
   const [examSet, setExamSet] = useState([])
   const [answers, setAnswers] = useState({}) // index -> optionIndex
@@ -85,6 +87,11 @@ export default function Exam({ onAnswer, onExit }) {
 
   const answeredCount = useMemo(() => Object.keys(answers).length, [answers])
 
+  // =================== EXAMEN REAL (mixt) ===================
+  if (phase === 'real') {
+    return <ExamReal minutes={minutes} onAnswer={onAnswer} onExit={onExit} />
+  }
+
   // =================== SETUP ===================
   if (phase === 'setup') {
     return (
@@ -100,10 +107,32 @@ export default function Exam({ onAnswer, onExit }) {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-400/80">Mod examen</p>
           <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-100">Configurează examenul</h1>
           <p className="mt-1 text-sm text-slate-400">
-            Timp limitat, fără feedback până la final. La sfârșit primești scor detaliat pe capitole.
+            Timp limitat, fără feedback până la final. La sfârșit primești scor detaliat.
           </p>
 
-          <div className="mt-6">
+          {/* Tip examen */}
+          <div className="mt-6 grid gap-2 sm:grid-cols-2">
+            <button
+              onClick={() => setExamType('real')}
+              className={`rounded-xl border p-3 text-left transition ${
+                examType === 'real' ? 'border-accent-400/60 bg-accent-500/10' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06]'
+              }`}
+            >
+              <p className="font-bold text-slate-100">Examen real (ca la licență)</p>
+              <p className="mt-0.5 text-xs text-slate-400">5 secțiuni · subiecte deschise + grile · reale și compuse · randomizat</p>
+            </button>
+            <button
+              onClick={() => setExamType('grila')}
+              className={`rounded-xl border p-3 text-left transition ${
+                examType === 'grila' ? 'border-accent-400/60 bg-accent-500/10' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06]'
+              }`}
+            >
+              <p className="font-bold text-slate-100">Examen grilă (rapid)</p>
+              <p className="mt-0.5 text-xs text-slate-400">Doar întrebări grilă, corectare automată</p>
+            </button>
+          </div>
+
+          <div className="mt-5">
             <p className="mb-2 text-sm font-semibold text-slate-300">Durată</p>
             <div className="grid grid-cols-3 gap-2">
               {TIME_OPTIONS.map((m) => (
@@ -118,23 +147,28 @@ export default function Exam({ onAnswer, onExit }) {
             </div>
           </div>
 
-          <div className="mt-5">
-            <p className="mb-2 text-sm font-semibold text-slate-300">Număr de întrebări</p>
-            <div className="grid grid-cols-3 gap-2">
-              {COUNT_OPTIONS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setCount(c)}
-                  className={`btn py-3 ${count === c ? 'btn-primary' : 'btn-ghost'}`}
-                >
-                  {c}
-                </button>
-              ))}
+          {examType === 'grila' && (
+            <div className="mt-5">
+              <p className="mb-2 text-sm font-semibold text-slate-300">Număr de întrebări</p>
+              <div className="grid grid-cols-3 gap-2">
+                {COUNT_OPTIONS.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setCount(c)}
+                    className={`btn py-3 ${count === c ? 'btn-primary' : 'btn-ghost'}`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          <button onClick={start} className="btn-primary mt-7 w-full py-4 text-base">
-            Începe examenul →
+          <button
+            onClick={() => (examType === 'real' ? setPhase('real') : start())}
+            className="btn-primary mt-7 w-full py-4 text-base"
+          >
+            {examType === 'real' ? 'Începe examenul real →' : 'Începe examenul grilă →'}
           </button>
         </motion.div>
       </div>
