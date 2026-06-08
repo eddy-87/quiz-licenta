@@ -22,7 +22,9 @@ function NavButton({ item, active, onClick, layout }) {
         {isActive && (
           <motion.span
             layoutId="nav-rail"
-            className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-accent-400"
+            // centrare prin inset simetric (NU prin -translate-y-1/2): altfel
+            // Framer suprascrie transform-ul în timpul animației și linia se descentrează
+            className="absolute left-0 inset-y-2 w-1 rounded-full bg-accent-400"
           />
         )}
         <Icon name={item.icon} className="h-5 w-5" />
