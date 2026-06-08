@@ -39,7 +39,7 @@ function Badge({ i, state }) {
   )
 }
 
-export default function QuestionCard({ question, selected, revealed, onSelect, shake }) {
+export default function QuestionCard({ question, selected, revealed, onSelect, shake, why }) {
   const chapter = CHAPTERS.find((c) => c.id === question.ch)
   const lesson = LESSONS[question.lesson]
 
@@ -83,7 +83,15 @@ export default function QuestionCard({ question, selected, revealed, onSelect, s
               className={optionClasses(i, state)}
             >
               <Badge i={i} state={state} />
-              <span className="leading-snug">{opt}</span>
+              <span className="leading-snug">
+                {opt}
+                {/* explicație per-variantă: de ce e greșită (la dezvăluire) */}
+                {revealed && why && why[i] && i !== question.correct && (
+                  <span className="mt-1 block text-xs font-normal leading-snug text-rose-200/75">
+                    — {why[i]}
+                  </span>
+                )}
+              </span>
             </motion.button>
           )
         })}

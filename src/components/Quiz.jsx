@@ -1,20 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { QUESTIONS, CHAPTERS } from '../data/questions'
+import { QUESTIONS, CHAPTERS, LESSONS } from '../data/questions'
+import { WHY } from '../data/whyMap'
 import { pickWeighted, shuffleOptions, weakPool } from '../lib/selection'
 import { coverage } from '../lib/stats'
 import { fireConfetti } from '../lib/confetti'
 import QuestionCard from './QuestionCard'
 import { Icon } from './Icon'
 
-export default function Quiz({ mode, chapterId = null, progress, onAnswer, onExit }) {
+export default function Quiz({ mode, chapterId = null, lessonId = null, progress, onAnswer, onExit }) {
   // Pool stabil pe durata sesiunii.
   const pool = useMemo(() => {
     if (mode === 'weak') return weakPool(QUESTIONS, progress, 2)
+    if (lessonId != null) return QUESTIONS.filter((q) => q.lesson === lessonId)
     if (chapterId != null) return QUESTIONS.filter((q) => q.ch === chapterId)
     return QUESTIONS
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, chapterId])
+  }, [mode, chapterId, lessonId])
 
   // Referință mereu actualizată la progres (pt. selecția ponderată corectă).
   const progressRef = useRef(progress)
@@ -28,7 +30,13 @@ export default function Quiz({ mode, chapterId = null, progress, onAnswer, onExi
   const [lastCorrect, setLastCorrect] = useState(false)
   const [session, setSession] = useState({ answered: 0, correct: 0 })
 
-  const prepare = useCallback((q) => ({ ...q, ...shuffleOptions(q) }), [])
+  const prepare = useCallback((q) => {
+    const s = shuffleOptions(q)
+    // remapăm explicațiile per-variantă la noua ordine a opțiunilor
+    const orig = WHY[q.id]
+    const why = orig ? s.order.map((i) => orig[i] || '') : null
+    return { ...q, ...s, why }
+  }, [])
 
   const nextQuestion = useCallback(() => {
     if (!pool.length) return
@@ -81,9 +89,11 @@ export default function Quiz({ mode, chapterId = null, progress, onAnswer, onExi
   const sessionLabel =
     mode === 'weak'
       ? 'Recapitulare greșeli'
-      : chapterId != null
-        ? CHAPTERS.find((c) => c.id === chapterId)?.name
-        : 'Exersare liberă'
+      : lessonId != null
+        ? LESSONS[lessonId]?.name || 'Lecție'
+        : chapterId != null
+          ? CHAPTERS.find((c) => c.id === chapterId)?.name
+          : 'Exersare liberă'
 
   if (!current) {
     return (
@@ -116,23 +126,24 @@ export default function Quiz({ mode, chapterId = null, progress, onAnswer, onExi
         </span>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current.id + ':' + session.answered}
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
-          transition={{ duration: 0.25 }}
-        >
-          <QuestionCard
-            question={current}
-            selected={selected}
-            revealed={revealed}
-            onSelect={handleSelect}
-            shake={shake}
-          />
-        </motion.div>
-      </AnimatePresence>
+      {/* Cheie = doar id-ul întrebării: a RĂSPUNDE nu remontează cardul
+          (altfel AnimatePresence mode="wait" se bloca). Se remontează doar
+          la trecerea la întrebarea următoare. */}
+      <motion.div
+        key={current.id}
+        initial={{ opacity: 0, x: 24 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.22 }}
+      >
+        <QuestionCard
+          question={current}
+          selected={selected}
+          revealed={revealed}
+          onSelect={handleSelect}
+          shake={shake}
+          why={current.why}
+        />
+      </motion.div>
 
       {/* Feedback + explicație */}
       <AnimatePresence>

@@ -40,12 +40,14 @@ export function shuffle(arr) {
 }
 
 // Returnează variantele amestecate + noul index al răspunsului corect.
+// `order` = permutarea folosită (order[nouIndex] = indexOriginal), utilă
+// pentru a remapa explicațiile per-variantă la noua ordine.
 export function shuffleOptions(question) {
   const idx = question.options.map((_, i) => i)
   const order = shuffle(idx)
   const options = order.map((i) => question.options[i])
   const correct = order.indexOf(question.correct)
-  return { options, correct }
+  return { options, correct, order }
 }
 
 // Tragere ponderată dintr-un pool de întrebări. `excludeId` evită repetarea

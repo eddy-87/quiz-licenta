@@ -4,6 +4,7 @@ import { overallAccuracy, coverage } from '../lib/stats'
 
 const NAV = [
   { id: 'dashboard', label: 'Panou', icon: 'panel' },
+  { id: 'invata', label: 'Învață', icon: 'cap' },
   { id: 'subiecte', label: 'Subiecte', icon: 'book' },
   { id: 'exam', label: 'Examen', icon: 'clock' },
   { id: 'stats', label: 'Statistici', icon: 'chart' },

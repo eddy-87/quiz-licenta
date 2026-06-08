@@ -10,28 +10,40 @@ import Quiz from './components/Quiz'
 import Exam from './components/Exam'
 import Stats from './components/Stats'
 import Subiecte from './components/Subiecte'
+import Scrie from './components/Scrie'
+import Invata from './components/Invata'
 
 export default function App() {
   const { progress, storageStatus, answer, reset, acknowledgeStatus } = useProgress()
-  const [screen, setScreen] = useState('dashboard') // dashboard | stats | practice | weak | exam
+  const [screen, setScreen] = useState('dashboard') // dashboard | invata | subiecte | scrie | stats | practice | weak | exam
   const [chapterId, setChapterId] = useState(null)
+  const [lessonId, setLessonId] = useState(null)
 
   const weakCount = useMemo(() => weakPool(QUESTIONS, progress, 2).length, [progress])
 
   const go = (s) => {
     setChapterId(null)
+    setLessonId(null)
     setScreen(s)
   }
   const startNormal = () => {
     setChapterId(null)
+    setLessonId(null)
     setScreen('practice')
   }
   const startWeak = () => {
     setChapterId(null)
+    setLessonId(null)
     setScreen('weak')
   }
   const startChapter = (id) => {
+    setLessonId(null)
     setChapterId(id)
+    setScreen('practice')
+  }
+  const startLesson = (id) => {
+    setChapterId(null)
+    setLessonId(id)
     setScreen('practice')
   }
 
@@ -50,10 +62,21 @@ export default function App() {
         onNavigate={go}
       />
     )
-  else if (screen === 'stats') content = <Stats progress={progress} onReset={reset} />
+  else if (screen === 'invata') content = <Invata onStartLesson={startLesson} />
   else if (screen === 'subiecte') content = <Subiecte />
+  else if (screen === 'scrie') content = <Scrie />
+  else if (screen === 'stats') content = <Stats progress={progress} onReset={reset} />
   else if (screen === 'practice')
-    content = <Quiz mode="normal" chapterId={chapterId} progress={progress} onAnswer={answer} onExit={() => go('dashboard')} />
+    content = (
+      <Quiz
+        mode="normal"
+        chapterId={chapterId}
+        lessonId={lessonId}
+        progress={progress}
+        onAnswer={answer}
+        onExit={() => go('dashboard')}
+      />
+    )
   else if (screen === 'weak')
     content = <Quiz mode="weak" progress={progress} onAnswer={answer} onExit={() => go('dashboard')} />
   else if (screen === 'exam') content = <Exam onAnswer={answer} onExit={() => go('dashboard')} />
@@ -66,7 +89,7 @@ export default function App() {
       {/* Tranziție simplă pe schimbarea ecranului (fără AnimatePresence
           mode="wait", care bloca tranzițiile între ecranele din shell). */}
       <motion.div
-        key={screen + (chapterId ?? '')}
+        key={screen + (chapterId ?? '') + (lessonId ?? '')}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22 }}

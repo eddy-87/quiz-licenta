@@ -132,6 +132,27 @@ export default function Dashboard({ progress, onStartNormal, onStartWeak, onStar
         <Icon name="chevron-right" className="h-5 w-5 shrink-0 text-slate-500" />
       </motion.button>
 
+      {/* Răspuns scris (type-in) */}
+      <motion.button
+        variants={fade}
+        initial="hidden"
+        animate="show"
+        custom={5}
+        onClick={() => onNavigate('scrie')}
+        className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-ink-850/70 p-4 text-left transition hover:bg-white/[0.05]"
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/25">
+          <Icon name="bolt" className="h-5 w-5" />
+        </span>
+        <div className="flex-1">
+          <p className="font-semibold text-slate-100">Răspuns scris (memorare activă)</p>
+          <p className="text-sm text-slate-400">
+            Tastezi răspunsul din cap la definiții, SQL și concepte — cea mai puternică formă de fixare.
+          </p>
+        </div>
+        <Icon name="chevron-right" className="h-5 w-5 shrink-0 text-slate-500" />
+      </motion.button>
+
       {/* CAPITOLE — progres + practică pe capitol */}
       <motion.div variants={fade} initial="hidden" animate="show" custom={4} className="mt-8">
         <div className="mb-3 flex items-baseline justify-between">
