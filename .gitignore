@@ -1,0 +1,18 @@
+# dependențe
+node_modules
+
+# build
+dist
+
+# loguri / temp
+*.log
+.DS_Store
+*.local
+
+# platforme de deploy
+.vercel
+.netlify
+
+# editor
+.vscode
+.idea

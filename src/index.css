@@ -1,0 +1,77 @@
+/* Fără fonturi externe — totul local, funcționează offline.
+   Folosim fontul de sistem (pe Windows: Segoe UI). */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-ink-950 text-slate-200 antialiased;
+    /* lumină caldă, foarte discretă — fără neon */
+    background-image:
+      radial-gradient(1100px 620px at 85% -12%, rgba(221, 180, 76, 0.07), transparent 60%),
+      radial-gradient(900px 520px at -8% 4%, rgba(95, 186, 136, 0.045), transparent 55%);
+    background-attachment: fixed;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Font mare și lizibil pe telefon */
+  body {
+    font-size: 16px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-white/10 bg-ink-850/80 shadow-card backdrop-blur-sm;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold transition-all
+           focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400 active:scale-[0.98]
+           select-none touch-manipulation;
+  }
+
+  .btn-primary {
+    /* buton auriu cu text închis -> elegant și lizibil */
+    @apply btn bg-gradient-to-br from-accent-300 to-accent-500 text-ink-950 shadow-glow hover:from-accent-200 hover:to-accent-400;
+  }
+
+  .btn-ghost {
+    @apply btn border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10;
+  }
+}
+
+/* Scrollbar discret */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(221, 180, 76, 0.30);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Respectă preferința de reducere a mișcării */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
