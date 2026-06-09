@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { QUESTIONS, CHAPTERS, LESSONS } from '../data/questions'
 import { WHY } from '../data/whyMap'
 import { pickWeighted, shuffleOptions, weakPool } from '../lib/selection'
-import { coverage } from '../lib/stats'
 import { fireConfetti } from '../lib/confetti'
 import QuestionCard from './QuestionCard'
 import { Icon } from './Icon'
@@ -84,7 +83,9 @@ export default function Quiz({ mode, chapterId = null, lessonId = null, progress
     return () => window.removeEventListener('keydown', onKey)
   }, [current, revealed, handleSelect, nextQuestion])
 
-  const cov = coverage(progress)
+  // Progres raportat la POOL-ul curent (capitol/lecție/tot), nu la totalul global —
+  // ca să fie consecvent cu cardul de pe panou (ex. 22/24 la un capitol).
+  const poolSolved = pool.filter((q) => (progress.questions[q.id]?.seen || 0) > 0).length
   const shake = revealed && !lastCorrect
   const sessionLabel =
     mode === 'weak'
@@ -117,7 +118,7 @@ export default function Quiz({ mode, chapterId = null, lessonId = null, progress
         <div className="min-w-0 flex-1 text-center">
           <p className="truncate text-sm font-semibold text-slate-200">{sessionLabel}</p>
           <p className="text-[11px] text-slate-500">
-            {mode === 'weak' ? `${pool.length} de exersat` : `${cov.solved}/${cov.total} rezolvate`}
+            {mode === 'weak' ? `${pool.length} de exersat` : `${poolSolved}/${pool.length} rezolvate`}
           </p>
         </div>
         <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-semibold text-slate-200">
