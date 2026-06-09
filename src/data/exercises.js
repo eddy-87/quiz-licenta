@@ -910,6 +910,235 @@ void push(Nod*& varf, int x) {
 // Nod* varf = NULL;  for (i) push(varf, X[i]);` },
     ],
   },
+
+  // ===== LOT 2 — subiecte suplimentare (compuse, din materie) =====
+
+  {
+    id: 'EX-SO-8', section: 'SO', type: 'theory',
+    title: 'Mecanisme de concurență: FORK-JOIN-QUIT vs PARBEGIN-PAREND',
+    prompt: 'Descrieți cele două mecanisme de specificare a concurenței: FORK-JOIN-QUIT și PARBEGIN-PAREND. Care e avantajul/dezavantajul fiecăruia?',
+    blocks: [
+      { t: 'h', v: 'FORK-JOIN-QUIT' },
+      { t: 'ul', v: [
+        'FORK label — creează un proces fiu care rulează în paralel cu părintele.',
+        'JOIN n, label — recombină n procese; la a n-a execuție sare la label.',
+        'QUIT — termină procesul curent.',
+        'Foarte puternic, dar intră în conflict cu programarea structurată (salturi de tip GOTO).',
+      ] },
+      { t: 'h', v: 'PARBEGIN-PAREND' },
+      { t: 'ul', v: [
+        'Instrucțiunile S1..Sn sunt lansate simultan și executate concurent; grupul se termină după cea mai lungă.',
+        'Clar și lizibil (se potrivește limbajelor cu structură de bloc), dar mai puțin flexibil decât FORK-JOIN.',
+      ] },
+    ],
+  },
+  {
+    id: 'EX-SO-9', section: 'SO', type: 'theory',
+    title: 'Alocarea virtuală: paginată vs segmentată',
+    prompt: 'Explicați alocarea paginată și alocarea segmentată: cum arată adresa, ce tabelă folosesc, avantaje și dezavantaje.',
+    blocks: [
+      { t: 'h', v: 'Paginată' },
+      { t: 'ul', v: [
+        'Adresa relocabilă = (p, d): p = nr. paginii virtuale, d = deplasament.',
+        'Fiecare proces are o tabelă de pagini (TP); paginile au lungime fixă, putere a lui 2.',
+        'Evită fragmentarea internă, permite cod reentrant.',
+      ] },
+      { t: 'h', v: 'Segmentată' },
+      { t: 'ul', v: [
+        'Adresa = (s, d): s = nr. segmentului, d = deplasament.',
+        'Fiecare proces are o tabelă de segmente (TS); segmentele au lungimi diferite.',
+        'Avantaj: segmente reentrante + protecție. Dezavantaj: fragmentare.',
+      ] },
+      { t: 'p', v: 'Soluția mixtă (segmentată și paginată) alocă fiecare segment paginat, eliminând fragmentarea.' },
+    ],
+  },
+  {
+    id: 'EX-SO-10', section: 'SO', type: 'theory',
+    title: 'Politici de înlocuire a paginilor (NRU, FIFO, LRU)',
+    prompt: 'Descrieți cele trei politici de înlocuire a paginilor: NRU, FIFO și LRU.',
+    blocks: [
+      { t: 'ul', v: [
+        'NRU (Not Recently Used): folosește biții R (referire) și M (modificare) → 4 clase; se evacuează din clasa cea mai mică.',
+        'FIFO (First In First Out): se evacuează cea mai veche pagină. Variantă: „a doua șansă" (testează bitul R).',
+        'LRU (Least Recently Used): se evacuează pagina cel mai puțin recent folosită (prin numărător de accese sau matrice de referințe).',
+      ] },
+    ],
+  },
+  {
+    id: 'EX-BD-6', section: 'BD', type: 'sql',
+    title: 'UPDATE cu condiție',
+    prompt: 'În tabela Reparatii, modificați tariful la 1500 pentru toate reparațiile la obiectul „calculator".',
+    blocks: [
+      { t: 'code', v: `UPDATE Reparatii
+SET tarif = 1500
+WHERE reparatie = 'calculator';` },
+    ],
+  },
+  {
+    id: 'EX-BD-7', section: 'BD', type: 'sql',
+    title: 'Ștergere cu subcerere',
+    prompt: 'Ștergeți din tabela Angajati angajații care au participat la reparațiile cu numerele 1 și 3 (id_reparatie = 1 sau 3).',
+    blocks: [
+      { t: 'p', v: 'Întâi verificăm cu SELECT, apoi ștergem folosind o subcerere:' },
+      { t: 'code', v: `DELETE FROM Angajati
+WHERE id_angajat IN (
+    SELECT id_angajat FROM Reparatii
+    WHERE id_reparatie = 1 OR id_reparatie = 3
+);` },
+    ],
+  },
+  {
+    id: 'EX-BD-8', section: 'BD', type: 'theory',
+    title: 'Tipuri de baze de date',
+    prompt: 'Enumerați și descrieți pe scurt principalele tipuri de baze de date.',
+    blocks: [
+      { t: 'ul', v: [
+        'Relaționale — date în tabele (rânduri/coloane), interogate cu SQL; cele mai răspândite.',
+        'Non-relaționale (NoSQL) — date nestructurate/semi-structurate, modele flexibile.',
+        'Orientate pe obiecte — informația sub formă de obiecte (ca în POO).',
+        'Distribuite — fișiere în site-uri/locații diferite.',
+        'Grafice — entități și relațiile dintre ele.',
+        'OLTP — rapide, pentru un număr mare de tranzacții.',
+        'Depozite de date (data warehouse) — depozit central pentru interogări și analize.',
+      ] },
+    ],
+  },
+  {
+    id: 'EX-RET-7', section: 'Retele', type: 'theory',
+    title: 'Modelul TCP/IP și comparația cu OSI',
+    prompt: 'Descrieți cele 4 niveluri ale modelului TCP/IP și comparați-l cu modelul OSI.',
+    blocks: [
+      { t: 'ul', v: [
+        '1. Acces la rețea — combină nivelurile Fizic și Legătură de date din OSI.',
+        '2. Internet — transmiterea pachetelor și determinarea căii optime (protocolul IP).',
+        '3. Transport — performanță, control flux, corectare erori (TCP orientat pe conexiune; UDP fără conexiune).',
+        '4. Aplicație — combină nivelurile Aplicație, Prezentare și Sesiune din OSI.',
+      ] },
+      { t: 'p', v: 'Comparație: TCP/IP are mai puține niveluri (4 vs 7). Cu UDP, nivelul transport TCP/IP nu garantează livrarea, pe când nivelul transport OSI oferă încredere. OSI e folosit mai ales ca model didactic.' },
+    ],
+  },
+  {
+    id: 'EX-RET-8', section: 'Retele', type: 'theory',
+    title: 'Pașii pentru Remote Desktop',
+    prompt: 'Enumerați pașii necesari pentru a accesa un computer prin Remote Desktop din exterior.',
+    blocks: [
+      { t: 'ul', v: [
+        '1. Activezi Remote Desktop pe computer (Proprietăți → fila „La distanță").',
+        '2. Deschizi portul 3389 în Windows Firewall (reguli de intrare pentru Remote Desktop).',
+        '3. Configurezi Port Forwarding în router pentru portul TCP 3389 (afli IP-ul/gateway-ul cu ipconfig).',
+        '4. Mapezi IP-ul dinamic la un nume gazdă (DNS dinamic).',
+        '5. Folosești o aplicație de Remote Desktop pentru a te conecta.',
+      ] },
+    ],
+  },
+  {
+    id: 'EX-WEB-5', section: 'Web', type: 'code',
+    title: 'Liste HTML (ordonată, neordonată, definiții)',
+    prompt: 'Scrieți exemple de listă ordonată, listă neordonată și listă de definiții în HTML.',
+    blocks: [
+      { t: 'code', v: `<!-- Listă ordonată (numerotată) -->
+<ol type="1">
+  <li>Primul</li>
+  <li>Al doilea</li>
+</ol>
+
+<!-- Listă neordonată -->
+<ul type="circle">
+  <li>Element</li>
+  <li>Element</li>
+</ul>
+
+<!-- Listă de definiții -->
+<dl>
+  <dt>HTML</dt>
+  <dd>Limbaj de marcare pentru pagini web.</dd>
+</dl>` },
+    ],
+  },
+  {
+    id: 'EX-WEB-6', section: 'Web', type: 'code',
+    title: 'CSS: selector de clasă și de ID',
+    prompt: 'Arătați diferența dintre un selector de clasă și unul de ID în CSS, cu exemple de aplicare în HTML.',
+    blocks: [
+      { t: 'code', v: `<style>
+  /* selector de clasă: se aplică oricăror elemente cu class="..." */
+  .evidentiat { color: #d29e34; font-weight: bold; }
+
+  /* selector de ID: se aplică UNUI element cu id="..." (unic) */
+  #titlu { font-size: 24px; }
+</style>
+
+<h1 id="titlu">Titlu</h1>
+<p class="evidentiat">Text evidențiat</p>
+<span class="evidentiat">și acesta</span>` },
+      { t: 'p', v: 'Clasa (.) se poate reutiliza pe mai multe elemente; ID-ul (#) e unic pe pagină.' },
+    ],
+  },
+  {
+    id: 'EX-WEB-7', section: 'Web', type: 'code',
+    title: 'Cadre HTML (frameset cu două cadre)',
+    prompt: 'Scrieți o pagină HTML cu două cadre verticale (20% și 80%), cu alternativă pentru browserele fără suport.',
+    blocks: [
+      { t: 'code', v: `<html>
+<head><title>Exemplu cadre</title></head>
+<frameset cols="20%,80%">
+  <frame src="meniu.html" name="stanga">
+  <frame src="continut.html" name="dreapta">
+  <noframes>
+    <body>Browserul folosit nu suportă cadre.</body>
+  </noframes>
+</frameset>
+</html>` },
+      { t: 'p', v: 'cols împarte pe verticală; <noframes> oferă conținut alternativ. O ancoră poate ținti un cadru cu target="dreapta".' },
+    ],
+  },
+  {
+    id: 'EX-ALG-20', section: 'Algo', type: 'algo',
+    title: 'Căutare liniară și căutare binară',
+    prompt: 'Scrieți funcția de căutare liniară (într-un șir oarecare) și funcția de căutare binară (într-un șir sortat). Precizați complexitățile.',
+    blocks: [
+      { t: 'code', v: `// căutare liniară — O(n)
+int cautLiniar(int a[], int n, int x) {
+    for (int i = 0; i < n; i++)
+        if (a[i] == x) return i;
+    return -1;
+}
+
+// căutare binară (șir sortat) — O(log n)
+int cautBinar(int a[], int n, int x) {
+    int st = 0, dr = n - 1;
+    while (st <= dr) {
+        int m = (st + dr) / 2;
+        if (a[m] == x) return m;
+        if (x < a[m]) dr = m - 1;
+        else          st = m + 1;
+    }
+    return -1;
+}` },
+    ],
+  },
+  {
+    id: 'EX-ALG-21', section: 'Algo', type: 'oop',
+    title: 'Încapsulare: clasă cu câmpuri private',
+    prompt: 'Definiți o clasă Persoana cu câmpuri private (nume, vârstă) și metode publice de acces (get/set), respectând încapsularea.',
+    blocks: [
+      { t: 'code', v: `class Persoana {
+private:
+    string nume;
+    int varsta;
+public:
+    Persoana(string n, int v) { nume = n; setVarsta(v); }
+
+    string getNume() { return nume; }
+
+    int getVarsta() { return varsta; }
+    void setVarsta(int v) {
+        if (v >= 0) varsta = v;   // validare — încapsulare
+    }
+};` },
+      { t: 'p', v: 'Câmpurile sunt private (ascunse); accesul se face controlat prin metode publice, cu validare în setter.' },
+    ],
+  },
 ]
 
 // Marcăm proveniența fiecărui subiect:
